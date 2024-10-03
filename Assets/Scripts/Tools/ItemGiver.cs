@@ -3,18 +3,16 @@ using UnityEngine;
 
 class ItemGiver<T>
 {
-    readonly private List<T> tList = new();
-
-    public List<T> ItemList => tList;
+    public List<T> ItemList { get; private set; } = new();
 
     public ItemGiver(List<T> list)
     {
-        tList = list;
+        ItemList = list;
     }
     public T GetRandomItem() {
         
-        int selectedIndex = Random.Range(0, tList.Count - 1);
-        Debug.Log($"totalIndex: {tList.Count - 1} selectedIndex: {selectedIndex} chosenItem: {tList[selectedIndex]}");
-        return tList[selectedIndex];
+        int selectedIndex = Random.Range(0, ItemList.Count - 1);
+        Debug.Log($"totalIndex: {ItemList.Count - 1} selectedIndex: {selectedIndex} chosenItem: {ItemList[selectedIndex]}");
+        return ItemList[selectedIndex];
     }
 }
