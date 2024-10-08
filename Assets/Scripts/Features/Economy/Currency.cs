@@ -5,6 +5,7 @@ using System;
 /// Struct helps with immutability, performance, and compatibility with math operations.
 /// </summary>
 /// <typeparam name="T"></typeparam>
+[Serializable]
 public class Currency<T>
     where T : struct, IComparable<T>
 {

@@ -1,13 +1,20 @@
-using System.Collections.Generic;
+using System;
+using AYellowpaper.SerializedCollections;
+using UnityEngine;
 
+[Serializable]
 public class SomeItem<T> : IValue<T>
     where T : struct
 {
-    private Dictionary<CurrencyType, T> currencyValues;
+    [SerializedDictionary("Currency Values", "Currency Values")]
+    public SerializedDictionary<CurrencyType, T> currencyValues;
 
-    public SomeItem()
+    [SerializeField]
+    public string itemName;
+
+    public SomeItem(string itemName)
     {
-        currencyValues = new Dictionary<CurrencyType, T>();
+        this.itemName = itemName;
     }
 
     public void SetValue(CurrencyType currencyType, T value)
