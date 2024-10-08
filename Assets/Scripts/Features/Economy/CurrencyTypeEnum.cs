@@ -1,5 +1,5 @@
 public enum CurrencyType
 {
-    Gold,
-    Steel,
+    GOLD,
+    STEEL,
 }

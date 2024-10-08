@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,6 +29,9 @@ public class ShopManager : MonoBehaviour
 
     private TextMeshProUGUI playerGoldState;
     private TextMeshProUGUI playerSteelState;
+    private Dictionary<SomeItem<int>, GameObject> itemUIMap =
+        new Dictionary<SomeItem<int>, GameObject>();
+    private List<SomeItem<int>> selectedItems = new List<SomeItem<int>>();
 
     private void Start()
     {
@@ -85,21 +89,135 @@ public class ShopManager : MonoBehaviour
             {
                 itemImage.color = GetRandomColor();
             }
+
+            // Store the mapping between the item and its UI representation
+            itemUIMap[item] = itemUI;
+
+            // Add a button component to detect click events
+            Button itemButton = itemUI.GetComponent<Button>();
+            itemButton = itemUI.AddComponent<Button>();
+
+            itemButton.onClick.AddListener(() => OnItemClicked(item));
         }
     }
 
     public void Buy()
     {
-        UpdateUI();
+        if (CanAffordSelectedItems())
+        {
+            PurchaseSelectedItems();
+            UpdateUI();
+        }
+        else
+        {
+            messageText.text = "You're broke!";
+        }
+    }
+
+    private bool CanAffordSelectedItems()
+    {
+        (int totalGold, int totalSteel, _) = CalculateTotals();
+        return playerGold.CanAfford(new Currency<int>(CurrencyType.GOLD, totalGold))
+            && playerSteel.CanAfford(new Currency<int>(CurrencyType.STEEL, totalSteel));
+    }
+
+    private void PurchaseSelectedItems()
+    {
+        (int totalGold, int totalSteel, _) = CalculateTotals();
+        playerGold.value -= totalGold;
+        playerSteel.value -= totalSteel;
     }
 
     private void UpdateUI()
     {
-        playerGoldState.text = "HELLO";
+        (int totalGold, int totalSteel, string itemNames) = CalculateTotals();
+        UpdateMessageBox(itemNames, totalGold, totalSteel);
+        UpdatePlayerInfo();
+    }
+
+    private void UpdateMessageBox(string itemNames, int totalGold, int totalSteel)
+    {
+        string message;
+        if (selectedItems.Count > 0)
+        {
+            message =
+                $"Selected items: {itemNames}\n"
+                + $"Total cost: {totalGold} gold{(totalSteel > 0 ? ", " + totalSteel + " steel" : "")}";
+        }
+        else
+        {
+            message = "No items selected";
+        }
+
+        messageText.text = message;
+    }
+
+    private void UpdatePlayerInfo()
+    {
+        playerGoldState.text = playerGold.value.ToString() + " gold";
+        playerSteelState.text = playerSteel.value.ToString() + " steel";
+    }
+
+    private void OnItemClicked(SomeItem<int> item)
+    {
+        if (selectedItems.Contains(item))
+        {
+            DeselectItem(item);
+        }
+        else
+        {
+            SelectItem(item);
+        }
+    }
+
+    private void SelectItem(SomeItem<int> item)
+    {
+        selectedItems.Add(item);
+
+        // Update the item's color
+        GameObject itemUI = itemUIMap[item];
+        TextMeshProUGUI itemNameText = itemUI
+            .transform.Find("Title")
+            .GetComponent<TextMeshProUGUI>();
+        itemNameText.color = Color.yellow;
+    }
+
+    private void DeselectItem(SomeItem<int> item)
+    {
+        selectedItems.Remove(item);
+
+        // Update the item's color
+        GameObject itemUI = itemUIMap[item];
+        TextMeshProUGUI itemNameText = itemUI
+            .transform.Find("Title")
+            .GetComponent<TextMeshProUGUI>();
+        itemNameText.color = Color.black;
     }
 
     private Color GetRandomColor()
     {
         return new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
+    }
+
+    private (int totalGold, int totalSteel, string itemNames) CalculateTotals()
+    {
+        int totalGold = 0;
+        int totalSteel = 0;
+        string itemNames = "";
+
+        foreach (var item in selectedItems)
+        {
+            totalGold += item.GetValue(CurrencyType.GOLD);
+            totalSteel += item.GetValue(CurrencyType.STEEL);
+            itemNames += item.itemName + ", ";
+        }
+
+        // Remove the trailing comma and space
+        if (itemNames.Length > 0)
+        {
+            itemNames.Substring(0, itemNames.Length - 2);
+        }
+
+        return (totalGold, totalSteel, itemNames);
     }
 }
