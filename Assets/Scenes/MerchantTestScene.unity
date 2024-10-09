@@ -852,27 +852,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerGold:
     currencyType: 0
-    value: 25
+    value: 23
   playerSteel:
     currencyType: 1
     value: 15
   messageText: {fileID: 2118535201}
-  playerUIParent: {fileID: 0}
+  playerUIParent: {fileID: 346941314}
   itemUIPrefab: {fileID: 1047388033571640378, guid: a20e05e2cd68fba4cb5e73a44e340603, type: 3}
   itemUIParent: {fileID: 1291225149}
   items:
-  - currencyValues:
-      _serializedList:
-      - Key: 0
-        Value: 10
-      - Key: 1
-        Value: 2
+  - currencies:
+    - currencyType: 0
+      value: 3
+    discountedValue: 0
     itemName: Apple
-  - currencyValues:
-      _serializedList:
-      - Key: 0
-        Value: 13
-    itemName: Chocolate
+  - currencies:
+    - currencyType: 1
+      value: 5
+    - currencyType: 0
+      value: 14
+    discountedValue: 0.5
+    itemName: Sword
 --- !u!4 &1188884518
 Transform:
   m_ObjectHideFlags: 0

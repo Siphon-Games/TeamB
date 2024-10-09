@@ -1,32 +1,39 @@
 using System;
-using AYellowpaper.SerializedCollections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
 public class SomeItem<T> : IValue<T>
-    where T : struct
+    where T : struct, IComparable<T>
 {
-    [SerializedDictionary("Currency Values", "Currency Values")]
-    public SerializedDictionary<CurrencyType, T> currencyValues;
+    [SerializeField]
+    public List<Currency<T>> currencies;
+
+    [SerializeField]
+    public float discountedValue;
 
     [SerializeField]
     public string itemName;
 
-    public SomeItem(string itemName)
+    public SomeItem(string itemName, float discountedValue)
     {
         this.itemName = itemName;
+        this.discountedValue = discountedValue;
     }
 
-    public void SetValue(CurrencyType currencyType, T value)
+    T IValue<T>.GetValue(CurrencyType currencyType)
     {
-        currencyValues[currencyType] = value;
-    }
-
-    public T GetValue(CurrencyType currencyType)
-    {
-        if (currencyValues.TryGetValue(currencyType, out T value))
+        foreach (var currency in currencies)
         {
-            return value;
+            if (currency.currencyType == currencyType)
+            {
+                if (discountedValue > 0)
+                {
+                    return currency.GetDiscounted(discountedValue).value;
+                }
+
+                return currency.value;
+            }
         }
 
         return default;

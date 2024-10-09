@@ -73,15 +73,19 @@ public class ShopManager : MonoBehaviour
             TextMeshProUGUI itemCostText = itemUI
                 .transform.Find("Price")
                 .GetComponent<TextMeshProUGUI>();
+
             string priceDisplay = "";
 
-            foreach (var currencyValue in item.currencyValues)
+            foreach (var currencies in item.currencies)
             {
-                priceDisplay +=
-                    currencyValue.Key.ToString() + ": " + currencyValue.Value.ToString() + " ";
+                CurrencyType type = currencies.currencyType;
+                string itemValue = ((IValue<int>)item).GetValue(type).ToString();
+                string itemCurrencyType = type.ToString().ToLower().FirstCharacterToUpper();
+
+                priceDisplay += itemValue + " " + itemCurrencyType + " ";
             }
 
-            itemCostText.text = priceDisplay;
+            itemCostText.text = priceDisplay.Trim();
 
             // Randomize the item's color
             Image itemImage = itemUI.GetComponent<Image>();
@@ -207,8 +211,8 @@ public class ShopManager : MonoBehaviour
 
         foreach (var item in selectedItems)
         {
-            totalGold += item.GetValue(CurrencyType.GOLD);
-            totalSteel += item.GetValue(CurrencyType.STEEL);
+            totalGold += ((IValue<int>)item).GetValue(CurrencyType.GOLD);
+            totalSteel += ((IValue<int>)item).GetValue(CurrencyType.STEEL);
             itemNames += item.itemName + ", ";
         }
 
