@@ -9,22 +9,19 @@ using System;
 public class Currency<T>
     where T : struct, IComparable<T>
 {
-    public CurrencyType currencyType;
+    public CurrencyTypeSO currencyType;
     public T value;
 
-    public Currency(CurrencyType currencyType, T value)
+    public Currency(CurrencyTypeSO currencyType, T value)
     {
+        // Fetch the currencyType from CurrencyManager dynamically
         this.currencyType = currencyType;
         this.value = value;
     }
 
-    public bool CanAfford(Currency<T> cost)
+    public bool CanAfford(T cost)
     {
-        // Check if the currency types are the same
-        if (currencyType != cost.currencyType)
-            return false;
-
-        return value.CompareTo(cost.value) >= 0;
+        return value.CompareTo(cost) >= 0;
     }
 
     public Currency<T> GetDiscounted(float discountValue)

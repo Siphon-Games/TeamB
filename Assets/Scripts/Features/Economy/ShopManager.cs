@@ -1,22 +1,34 @@
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Manages the shop functionality for the MerchantTestScene.
+/// This class is responsible for handling player currency, item selection, and purchase operations.
+/// It is intended for testing purposes only and should not be used in production.
+/// </summary>
 public class ShopManager : MonoBehaviour
 {
-    [SerializeField]
-    private Currency<int> playerGold;
+    #region Serialized Fields
 
     [SerializeField]
-    private Currency<int> playerSteel;
+    private CurrencyManager currencyManager;
+
+    [SerializeField]
+    private int initialPlayerGold = 100;
+
+    [SerializeField]
+    private int initialPlayerSteel = 50;
+
+    [SerializeField]
+    private TextMeshProUGUI playerGoldText;
+
+    [SerializeField]
+    private TextMeshProUGUI playerSteelText;
 
     [SerializeField]
     private TextMeshProUGUI messageText;
-
-    [SerializeField]
-    private Transform playerUIParent;
 
     [SerializeField]
     private GameObject itemUIPrefab;
@@ -25,42 +37,62 @@ public class ShopManager : MonoBehaviour
     private Transform itemUIParent;
 
     [SerializeField]
-    private List<SomeItem<int>> items;
+    private List<CurrencyItem<int>> items;
 
-    private TextMeshProUGUI playerGoldState;
-    private TextMeshProUGUI playerSteelState;
-    private Dictionary<SomeItem<int>, GameObject> itemUIMap =
-        new Dictionary<SomeItem<int>, GameObject>();
-    private List<SomeItem<int>> selectedItems = new List<SomeItem<int>>();
+    #endregion
 
+    #region Private Fields
+
+    private Currency<int> playerGold;
+    private Currency<int> playerSteel;
+    private Dictionary<CurrencyItem<int>, GameObject> itemUIMap =
+        new Dictionary<CurrencyItem<int>, GameObject>();
+    private List<CurrencyItem<int>> selectedItems = new List<CurrencyItem<int>>();
+
+    #endregion
+
+    #region Unity Lifecycle
+
+    /// <summary>
+    /// Initializes the player's currency and instantiates shop items.
+    /// </summary>
     private void Start()
     {
         InstantiatePlayer();
         InstantiateItems();
     }
 
+    #endregion
+
+    #region Initialization Methods
+
+
+    /// <summary>
+    /// Sets up the player's initial currency values and updates the UI.
+    /// </summary>
     private void InstantiatePlayer()
     {
-        TextMeshProUGUI playerGoldText = playerUIParent
-            .Find("GoldText")
-            .GetComponent<TextMeshProUGUI>();
+        CurrencyTypeSO goldType = currencyManager.GetCurrencyType("Gold");
+        CurrencyTypeSO steelType = currencyManager.GetCurrencyType("Steel");
 
-        TextMeshProUGUI playerSteelText = playerUIParent
-            .Find("SteelText")
-            .GetComponent<TextMeshProUGUI>();
+        playerGold = new Currency<int>(goldType, initialPlayerGold);
+        playerSteel = new Currency<int>(steelType, initialPlayerSteel);
 
         playerGoldText.text = playerGold.value.ToString() + " gold";
         playerSteelText.text = playerSteel.value.ToString() + " steel";
-
-        playerGoldState = playerGoldText;
-        playerSteelState = playerSteelText;
     }
 
+    /// <summary>
+    /// Creates UI elements for each shop item and sets up click listeners.
+    /// </summary>
     private void InstantiateItems()
     {
+        Transform viewPort = itemUIParent.Find("Vertical").Find("Horizontal");
+        var goldType = currencyManager.GetCurrencyType("Gold");
+        var steelType = currencyManager.GetCurrencyType("Steel");
+
         foreach (var item in items)
         {
-            Transform viewPort = itemUIParent.Find("Vertical").Find("Horizontal");
             GameObject itemUI = Instantiate(itemUIPrefab, viewPort);
 
             // Find and set the item name
@@ -76,13 +108,16 @@ public class ShopManager : MonoBehaviour
 
             string priceDisplay = "";
 
-            foreach (var currencies in item.currencies)
-            {
-                CurrencyType type = currencies.currencyType;
-                string itemValue = ((IValue<int>)item).GetValue(type).ToString();
-                string itemCurrencyType = type.ToString().ToLower().FirstCharacterToUpper();
+            int goldValue = item.GetValue(goldType);
+            int steelValue = item.GetValue(steelType);
 
-                priceDisplay += itemValue + " " + itemCurrencyType + " ";
+            if (goldValue > 0)
+            {
+                priceDisplay += $"{goldValue} Gold ";
+            }
+            if (steelValue > 0)
+            {
+                priceDisplay += $"{steelValue} Steel";
             }
 
             itemCostText.text = priceDisplay.Trim();
@@ -105,6 +140,14 @@ public class ShopManager : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Public Methods
+
+    /// <summary>
+    /// Attempts to purchase the selected items if the player has sufficient funds.
+    /// Updates the UI to reflect the transaction or displays an error message.
+    /// </summary>
     public void Buy()
     {
         if (CanAffordSelectedItems())
@@ -114,17 +157,27 @@ public class ShopManager : MonoBehaviour
         }
         else
         {
-            messageText.text = "You're broke!";
+            messageText.text = "You're too broke to buy make this purchase!";
         }
     }
 
+    #endregion
+
+    #region Private Helper Methods
+
+    /// <summary>
+    /// Checks if the player has enough currency to purchase all selected items.
+    /// </summary>
+    /// <returns>True if the player can afford the items, false otherwise.</returns>
     private bool CanAffordSelectedItems()
     {
         (int totalGold, int totalSteel, _) = CalculateTotals();
-        return playerGold.CanAfford(new Currency<int>(CurrencyType.GOLD, totalGold))
-            && playerSteel.CanAfford(new Currency<int>(CurrencyType.STEEL, totalSteel));
+        return playerGold.CanAfford(totalGold) && playerSteel.CanAfford(totalSteel);
     }
 
+    /// <summary>
+    /// Deducts the cost of selected items from the player's currency.
+    /// </summary>
     private void PurchaseSelectedItems()
     {
         (int totalGold, int totalSteel, _) = CalculateTotals();
@@ -132,6 +185,9 @@ public class ShopManager : MonoBehaviour
         playerSteel.value -= totalSteel;
     }
 
+    /// <summary>
+    /// Updates all UI elements to reflect the current state of the shop and player currency.
+    /// </summary>
     private void UpdateUI()
     {
         (int totalGold, int totalSteel, string itemNames) = CalculateTotals();
@@ -139,6 +195,9 @@ public class ShopManager : MonoBehaviour
         UpdatePlayerInfo();
     }
 
+    /// <summary>
+    /// Updates the message box with information about selected items and their total cost.
+    /// </summary>
     private void UpdateMessageBox(string itemNames, int totalGold, int totalSteel)
     {
         string message;
@@ -156,13 +215,20 @@ public class ShopManager : MonoBehaviour
         messageText.text = message;
     }
 
+    /// <summary>
+    /// Updates the display of the player's current currency values.
+    /// </summary>
     private void UpdatePlayerInfo()
     {
-        playerGoldState.text = playerGold.value.ToString() + " gold";
-        playerSteelState.text = playerSteel.value.ToString() + " steel";
+        playerGoldText.text = playerGold.value.ToString() + " gold";
+        playerSteelText.text = playerSteel.value.ToString() + " steel";
     }
 
-    private void OnItemClicked(SomeItem<int> item)
+    /// <summary>
+    /// Handles the selection or deselection of an item when clicked.
+    /// </summary>
+    /// <param name="item">The item that was clicked.</param>
+    private void OnItemClicked(CurrencyItem<int> item)
     {
         if (selectedItems.Contains(item))
         {
@@ -174,7 +240,11 @@ public class ShopManager : MonoBehaviour
         }
     }
 
-    private void SelectItem(SomeItem<int> item)
+    /// <summary>
+    /// Adds an item to the selected items list and updates its UI to show selection.
+    /// </summary>
+    /// <param name="item">The item to select.</param>
+    private void SelectItem(CurrencyItem<int> item)
     {
         selectedItems.Add(item);
 
@@ -186,7 +256,11 @@ public class ShopManager : MonoBehaviour
         itemNameText.color = Color.yellow;
     }
 
-    private void DeselectItem(SomeItem<int> item)
+    /// <summary>
+    /// Removes an item from the selected items list and updates its UI to show deselection.
+    /// </summary>
+    /// <param name="item">The item to deselect.</param>
+    private void DeselectItem(CurrencyItem<int> item)
     {
         selectedItems.Remove(item);
 
@@ -198,11 +272,19 @@ public class ShopManager : MonoBehaviour
         itemNameText.color = Color.black;
     }
 
+    /// <summary>
+    /// Generates a random color for item UI elements.
+    /// </summary>
+    /// <returns>A random Color object.</returns>
     private Color GetRandomColor()
     {
         return new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
     }
 
+    /// <summary>
+    /// Calculates the total cost of all selected items and generates a list of their names.
+    /// </summary>
+    /// <returns>A tuple containing the total gold cost, total steel cost, and a comma-separated list of item names.</returns>
     private (int totalGold, int totalSteel, string itemNames) CalculateTotals()
     {
         int totalGold = 0;
@@ -211,8 +293,11 @@ public class ShopManager : MonoBehaviour
 
         foreach (var item in selectedItems)
         {
-            totalGold += ((IValue<int>)item).GetValue(CurrencyType.GOLD);
-            totalSteel += ((IValue<int>)item).GetValue(CurrencyType.STEEL);
+            CurrencyTypeSO goldType = currencyManager.GetCurrencyType("Gold");
+            CurrencyTypeSO steelType = currencyManager.GetCurrencyType("Steel");
+
+            totalGold += ((IValue<int>)item).GetValue(goldType);
+            totalSteel += ((IValue<int>)item).GetValue(steelType);
             itemNames += item.itemName + ", ";
         }
 
@@ -224,4 +309,6 @@ public class ShopManager : MonoBehaviour
 
         return (totalGold, totalSteel, itemNames);
     }
+
+    #endregion
 }
