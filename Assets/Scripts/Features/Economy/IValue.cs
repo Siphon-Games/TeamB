@@ -2,8 +2,14 @@
 /// Defines a method to retrieve the value of an item or entity in terms of a specific currency type.
 /// This interface allows any class that implements it to return a currency value based on the provided <see cref="CurrencyTypeSO"/>.
 /// </summary>
-/// <typeparam name="T">The type of the currency value, typically a numeric type like <see cref="int"/> or <see cref="float"/>.</typeparam>
-public interface IValue<T>
+public interface IValue
 {
-    T GetValue(CurrencyTypeSO currencyType);
+    /// <summary>
+    /// Retrieves the value of the item in a specific currency.
+    /// </summary>
+    /// <param name="currencyType">The type of currency (e.g., gold, steel).</param>
+    /// <returns>
+    /// The item's value in the specified currency. If a discount is applied, returns the discounted value.
+    /// </returns>
+    int GetValue(CurrencyTypeSO currencyType);
 }

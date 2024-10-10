@@ -866,19 +866,19 @@ MonoBehaviour:
     - currencyType: {fileID: 11400000, guid: 535ec1782d674344e834bb1fb328318f, type: 2}
       value: 19
     discountedValue: 0
-    <itemName>k__BackingField: Apple
+    item: {fileID: 0}
   - <currencies>k__BackingField:
     - currencyType: {fileID: 11400000, guid: 535ec1782d674344e834bb1fb328318f, type: 2}
       value: 20
     - currencyType: {fileID: 11400000, guid: 00f78e425a7e799409f5c2596d701bb5, type: 2}
       value: 13
     discountedValue: 0.3
-    <itemName>k__BackingField: Sword
+    item: {fileID: 0}
   - <currencies>k__BackingField:
     - currencyType: {fileID: 11400000, guid: 00f78e425a7e799409f5c2596d701bb5, type: 2}
       value: 12
     discountedValue: 0
-    <itemName>k__BackingField: Banana
+    item: {fileID: 0}
 --- !u!4 &1188884518
 Transform:
   m_ObjectHideFlags: 0

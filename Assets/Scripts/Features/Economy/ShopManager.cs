@@ -37,7 +37,7 @@ public class ShopManager : MonoBehaviour
     private Transform itemUIParent;
 
     [SerializeField]
-    private List<CurrencyItem<int>> items;
+    private List<CurrencyItem> items;
 
     #endregion
 
@@ -45,9 +45,9 @@ public class ShopManager : MonoBehaviour
 
     private Currency<int> playerGold;
     private Currency<int> playerSteel;
-    private Dictionary<CurrencyItem<int>, GameObject> itemUIMap =
-        new Dictionary<CurrencyItem<int>, GameObject>();
-    private List<CurrencyItem<int>> selectedItems = new List<CurrencyItem<int>>();
+    private Dictionary<CurrencyItem, GameObject> itemUIMap =
+        new Dictionary<CurrencyItem, GameObject>();
+    private List<CurrencyItem> selectedItems = new List<CurrencyItem>();
 
     #endregion
 
@@ -99,7 +99,7 @@ public class ShopManager : MonoBehaviour
             TextMeshProUGUI itemNameText = itemUI
                 .transform.Find("Title")
                 .GetComponent<TextMeshProUGUI>();
-            itemNameText.text = item.itemName;
+            itemNameText.text = item.item.Name;
 
             // Find and set the item cost
             TextMeshProUGUI itemCostText = itemUI
@@ -228,7 +228,7 @@ public class ShopManager : MonoBehaviour
     /// Handles the selection or deselection of an item when clicked.
     /// </summary>
     /// <param name="item">The item that was clicked.</param>
-    private void OnItemClicked(CurrencyItem<int> item)
+    private void OnItemClicked(CurrencyItem item)
     {
         if (selectedItems.Contains(item))
         {
@@ -244,7 +244,7 @@ public class ShopManager : MonoBehaviour
     /// Adds an item to the selected items list and updates its UI to show selection.
     /// </summary>
     /// <param name="item">The item to select.</param>
-    private void SelectItem(CurrencyItem<int> item)
+    private void SelectItem(CurrencyItem item)
     {
         selectedItems.Add(item);
 
@@ -260,7 +260,7 @@ public class ShopManager : MonoBehaviour
     /// Removes an item from the selected items list and updates its UI to show deselection.
     /// </summary>
     /// <param name="item">The item to deselect.</param>
-    private void DeselectItem(CurrencyItem<int> item)
+    private void DeselectItem(CurrencyItem item)
     {
         selectedItems.Remove(item);
 
@@ -296,9 +296,9 @@ public class ShopManager : MonoBehaviour
             CurrencyTypeSO goldType = currencyManager.GetCurrencyType("Gold");
             CurrencyTypeSO steelType = currencyManager.GetCurrencyType("Steel");
 
-            totalGold += ((IValue<int>)item).GetValue(goldType);
-            totalSteel += ((IValue<int>)item).GetValue(steelType);
-            itemNames += item.itemName + ", ";
+            totalGold += item.GetValue(goldType);
+            totalSteel += item.GetValue(steelType);
+            itemNames += item.item.Name + ", ";
         }
 
         // Remove the trailing comma and space
