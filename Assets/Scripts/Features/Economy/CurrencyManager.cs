@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>
-/// Manages the different types of currencies available in the game.
-/// This class is responsible for storing and retrieving currency types.
+/// Manages all the different types of currencies available in the game.
+/// This class is responsible for storing, managing, and retrieving currency types, allowing other systems
+/// to query currency details based on their name or retrieve a list of available currencies.
 /// </summary>
 [Serializable]
 public class CurrencyManager
@@ -13,17 +14,5 @@ public class CurrencyManager
     public CurrencyTypeSO GetCurrencyType(string currencyName)
     {
         return availableCurrencies.Find(c => c.currency == currencyName);
-    }
-
-    public List<string> GetAvailableCurrencyNames()
-    {
-        List<string> result = new List<string>();
-
-        foreach (var c in availableCurrencies)
-        {
-            result.Add(c.currency);
-        }
-
-        return result;
     }
 }
