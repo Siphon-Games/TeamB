@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class InteractorSample : MonoBehaviour, IInteractor
 {
-    public InteractionMethods InteractionMethod { get; set; }
+    [field: SerializeField] public InteractionMethods InteractionMethod { get; set; }
     public IInteractable CurrentInteractable { get; set; }
 
     // 2D Trigger
@@ -18,7 +18,7 @@ public class InteractorSample : MonoBehaviour, IInteractor
     [field: SerializeField] public Vector3 RayDirection { get; set; } // Use ShowIf from Odin
 
     // Sorting
-    public LayerMask InteractableLayers { get; set; }
+    [field: SerializeField] public LayerMask InteractableLayers { get; set; }
 
     private void Start()
     {
