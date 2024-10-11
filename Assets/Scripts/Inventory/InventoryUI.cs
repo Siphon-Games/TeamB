@@ -5,11 +5,10 @@ using UnityEngine.UI;
 
 public class InventoryUI
     : Inventory,
-        IPointerClickHandler,
-        IPointerMoveHandler,
         IBeginDragHandler,
         IEndDragHandler,
-        IDragHandler
+        IDragHandler,
+        IPointerClickHandler
 {
     [SerializeField]
     InventorySlotPrefab _slotPrefab;
@@ -17,7 +16,7 @@ public class InventoryUI
     [SerializeField]
     RectTransform _parentRectTransform;
 
-    InventorySlot selectedSlot;
+    static InventorySlot selectedSlot;
     InventorySlot originSlot;
 
     Image draggingItem;
@@ -29,8 +28,6 @@ public class InventoryUI
     Button SaveButton,
         LoadButton;
 
-    bool isDragging;
-
     enum ItemMoveType
     {
         DragAndDrop,
@@ -39,6 +36,39 @@ public class InventoryUI
 
     [SerializeField]
     List<ItemMoveType> itemMoveTypes;
+
+    bool isDragging = false;
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (!itemMoveTypes.Contains(ItemMoveType.ClickHold) || isDragging)
+        {
+            return;
+        }
+
+        bool isRightClick = eventData.button == PointerEventData.InputButton.Right;
+        if (selectedSlot == null)
+        {
+            PickUpItem(eventData);
+        }
+        else
+        {
+            TryMoveItem(eventData, isRightClick);
+        }
+    }
+
+    private void Update()
+    {
+        if (selectedSlot != null && draggingItem != null)
+        {
+            if (draggingItem != null)
+            {
+                var screenPoint = Input.mousePosition;
+                screenPoint.z = 100;
+                draggingItem.transform.position = Camera.main.ScreenToWorldPoint(screenPoint);
+            }
+        }
+    }
 
     public override void InitializeInventory()
     {
@@ -54,57 +84,24 @@ public class InventoryUI
 
         List<(InventoryItem item, int quantity)> itemsWithQuantities = new();
 
+        // Remove after test
         items.ForEach(item =>
         {
             itemsWithQuantities.Add(new(item, Random.Range(1, 5)));
         });
-
-        itemsWithQuantities.Add(new(new HelmetItem(8, 11, 255), Random.Range(1, 5)));
 
         AddItems(itemsWithQuantities);
     }
 
     public void LoadInventory()
     {
-        var savedInventory = Load();
-        Slots.ForEach(slot => slot.RemoveItem());
+        var savedInventory = Load() ?? throw new System.Exception("No saved inventory present");
 
+        Slots.ForEach(slot => slot.RemoveItem());
         savedInventory.ForEach(savedSlot =>
         {
             Slots[savedSlot.Index].AddItem(savedSlot.Item, savedSlot.Quantity);
         });
-    }
-
-    public void OnPointerMove(PointerEventData eventData)
-    {
-        if (draggingItem != null && !isDragging)
-        {
-            var screenPoint = Input.mousePosition;
-            screenPoint.z = 100;
-            draggingItem.transform.position = Camera.main.ScreenToWorldPoint(screenPoint);
-        }
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (!itemMoveTypes.Contains(ItemMoveType.ClickHold))
-        {
-            return;
-        }
-
-        bool isRightClick = eventData.button == PointerEventData.InputButton.Right;
-
-        if (!isDragging)
-        {
-            if (selectedSlot == null)
-            {
-                PickUpItem(eventData);
-            }
-            else
-            {
-                TryMoveItem(eventData, isRightClick);
-            }
-        }
     }
 
     public void PickUpItem(PointerEventData eventData)
@@ -140,7 +137,6 @@ public class InventoryUI
     public void MoveDraggedItem(PointerEventData eventData)
     {
         var pointerObject = eventData.pointerCurrentRaycast.gameObject;
-
         if (pointerObject == null)
         {
             if (originSlot != null)
@@ -162,25 +158,32 @@ public class InventoryUI
                 if (targetItem == null)
                 {
                     targetSlot.AddItem(originItem, selectedSlot.Quantity);
-                    Destroy(selectedSlot.gameObject);
-                    selectedSlot = null;
+                    ResetSelectedSlot();
                     return;
                 }
 
                 // if both are the same we update amount
-                if (targetItem == originItem)
+                if (targetItem.Id == originItem.Id)
                 {
                     targetSlot.UpdateQuantity(selectedSlot.Quantity);
-                    Destroy(selectedSlot.gameObject);
-                    selectedSlot = null;
+                    ResetSelectedSlot();
                     return;
                 }
 
                 // else we switch
+                InventoryItem item = targetSlot.Item;
+                int quantity = targetSlot.Quantity;
                 targetSlot.AddItem(originItem, selectedSlot.Quantity);
-                originSlot.AddItem(targetItem, targetSlot.Quantity);
+                originSlot.AddItem(item, quantity);
+                ResetSelectedSlot();
             }
         }
+    }
+
+    void ResetSelectedSlot()
+    {
+        Destroy(selectedSlot.gameObject);
+        selectedSlot = null;
     }
 
     void ReturnToOrigin()
@@ -193,6 +196,7 @@ public class InventoryUI
     public void TryMoveItem(PointerEventData eventData, bool isRightClick = false)
     {
         var pointerObject = eventData.pointerCurrentRaycast.gameObject;
+
         if (pointerObject == null)
         {
             if (originSlot != null)
@@ -207,23 +211,46 @@ public class InventoryUI
         {
             if (selectedSlot != null)
             {
-                if (IsAllowedToMove(selectedSlot, targetSlot))
-                {
-                    int moveAmount = isRightClick ? 1 : selectedSlot.Quantity;
+                var targetItem = targetSlot.Item;
+                var originItem = selectedSlot.Item;
+                int quantityAmount = isRightClick ? 1 : selectedSlot.Quantity;
+                int originQuantityChange = selectedSlot.Quantity - quantityAmount;
 
-                    MoveItem(selectedSlot, targetSlot, moveAmount);
-                    if (!isRightClick || selectedSlot.Quantity == 0)
+                // if target has no item we dump
+                if (targetItem == null)
+                {
+                    targetSlot.AddItem(originItem, quantityAmount);
+                    if (isRightClick)
                     {
-                        Destroy(selectedSlot.gameObject);
-                        selectedSlot = null;
+                        selectedSlot.UpdateQuantity(-quantityAmount);
+                    }
+
+                    if (originQuantityChange == 0)
+                    {
+                        ResetSelectedSlot();
                     }
                     return;
                 }
-                if (!isRightClick && originSlot != null)
+
+                // if both are the same we update amount
+                if (targetItem.Id == originItem.Id)
                 {
-                    originSlot.AddItem(selectedSlot.Item, selectedSlot.Quantity);
-                    Destroy(selectedSlot.gameObject);
-                    selectedSlot = null;
+                    targetSlot.UpdateQuantity(quantityAmount);
+                    selectedSlot.UpdateQuantity(-quantityAmount);
+                    if (originQuantityChange == 0)
+                    {
+                        ResetSelectedSlot();
+                    }
+                    return;
+                }
+
+                // else we switch
+                if (!isRightClick)
+                {
+                    InventoryItem item = targetItem;
+                    int quantity = targetSlot.Quantity;
+                    targetSlot.AddItem(originItem, selectedSlot.Quantity);
+                    selectedSlot.AddItem(item, quantity);
                 }
             }
         }
@@ -245,8 +272,7 @@ public class InventoryUI
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        bool isRightClick = eventData.button == PointerEventData.InputButton.Right;
-        TryMoveItem(eventData, isRightClick);
+        MoveDraggedItem(eventData);
         isDragging = false;
     }
 

@@ -7,6 +7,12 @@ public class InventorySlot : MonoBehaviour
     public int Quantity { get; private set; }
     public InventoryItem Item { get; private set; } = null;
 
+    public InventorySlot(InventorySlot slot)
+    {
+        Quantity = slot.Quantity;
+        Item = slot.Item;
+    }
+
     public virtual void UpdateQuantity(int newAmount)
     {
         Quantity += newAmount;

@@ -14,18 +14,20 @@ public class InventorySlotPrefab : InventorySlot
     [SerializeField]
     Image ItemQuantityBackground;
 
+    public InventorySlotPrefab(InventorySlot slot)
+        : base(slot) { }
+
     public override void AddItem(InventoryItem item, int quantity)
     {
         base.AddItem(item, quantity);
-        if (quantity > 1)
-        {
-            ItemQuantityBackground.gameObject.SetActive(true);
-            ItemQuantityField.text = Quantity.ToString();
-        }
+
+        ItemQuantityBackground.gameObject.SetActive(quantity > 1);
+        ItemQuantityField.text = Quantity.ToString();
         ItemImage.gameObject.SetActive(true);
         ItemImage.color = GetColorById(item.Id);
     }
 
+    // Remove after test
     Color GetColorById(int id)
     {
         return id switch
