@@ -4,12 +4,14 @@ using UnityEngine.InputSystem.XR;
 
 public class NpcMovement2D : MonoBehaviour, ICharacterMovement2D
 {
+    [SerializeReference]
     [SerializeField]
     float moveSpeed = 5f;
 
     [SerializeField]
     Transform cameraTransform;
 
+    [SerializeReference]
     [SerializeField]
     float movementRange = 5f;
 
@@ -18,8 +20,7 @@ public class NpcMovement2D : MonoBehaviour, ICharacterMovement2D
 
     void Start()
     {
-        targetPosition = transform.position;
-        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        InitializeNpc();
     }
 
     void Update()
@@ -35,18 +36,30 @@ public class NpcMovement2D : MonoBehaviour, ICharacterMovement2D
 
         if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
         {
-            float randomX = Random.Range(-movementRange, movementRange);
-            float randomZ = Random.Range(-movementRange, movementRange);
-            targetPosition = new Vector3(
-                transform.position.x + randomX,
-                transform.position.y,
-                transform.position.z + randomZ
-            );
+            targetPosition = GetNewTargetPosition();
         }
 
         spriteRenderer.transform.rotation = Quaternion.LookRotation(
             cameraTransform.forward,
             cameraTransform.up
         );
+    }
+
+    public virtual Vector3 GetNewTargetPosition()
+    {
+        float randomX = Random.Range(-movementRange, movementRange);
+        float randomZ = Random.Range(-movementRange, movementRange);
+
+        return new Vector3(
+            transform.position.x + randomX,
+            transform.position.y,
+            transform.position.z + randomZ
+        );
+    }
+
+    public virtual void InitializeNpc()
+    {
+        targetPosition = transform.position;
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
     }
 }
