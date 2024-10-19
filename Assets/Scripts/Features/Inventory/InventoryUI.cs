@@ -84,10 +84,12 @@ public class InventoryUI
 
         List<(InventoryItem item, int quantity)> itemsWithQuantities = new();
 
-        // Remove after test
         items.ForEach(item =>
         {
-            itemsWithQuantities.Add(new(item, Random.Range(1, 5)));
+            if (item.Quantity > 0)
+            {
+                itemsWithQuantities.Add(new(item, item.Quantity));
+            }
         });
 
         AddItems(itemsWithQuantities);
