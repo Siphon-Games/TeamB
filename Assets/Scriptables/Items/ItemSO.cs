@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -6,8 +7,18 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "ItemSO", menuName = "Item")]
 public class ItemSO : ScriptableObject
 {
-    public int Id;
+    [field: SerializeField, ReadOnly]
+    public string Id { get; private set; }
     public string Name;
     public string Description;
     public Sprite Icon;
+
+    private void OnValidate()
+    {
+        // Assign random Id to item
+        if (string.IsNullOrEmpty(Id))
+        {
+            Id = IDGenerator.GenerateRandomID();
+        }
+    }
 }

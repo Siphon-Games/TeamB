@@ -4,12 +4,18 @@ using UnityEngine;
 [Serializable]
 public class InventoryItem
 {
-    [field: SerializeField]
-    public int Id { get; private set; }
-    public string Type => GetType().Name;
+    [SerializeField]
+    public ItemSO item;
 
-    public InventoryItem(int id)
-    {
-        Id = id;
-    }
+    public string Id => item.Id;
+    public Sprite Icon => item.Icon;
+
+    // [field: SerializeField]
+    // public int Id { get; private set; }
+    // public string Type => GetType().Name;
+
+    // public InventoryItem(int id)
+    // {
+    //     Id = id;
+    // }
 }

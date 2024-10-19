@@ -108,7 +108,7 @@ public class InventoryUI
     {
         var targetSlot =
             eventData.pointerCurrentRaycast.gameObject.GetComponentInParent<InventorySlot>();
-        if (targetSlot != null && targetSlot.Item != null && targetSlot.Item.Id > 0)
+        if (targetSlot != null && targetSlot.Item != null && targetSlot.Item.Id != null)
         {
             if (draggingItem != null)
             {

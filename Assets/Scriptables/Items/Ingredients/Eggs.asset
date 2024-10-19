@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c12214b501293cd438896eb3c59a213e, type: 3}
-  m_Name: Apple
+  m_Name: Eggs
   m_EditorClassIdentifier: 
-  Id: 0
-  Name: Apple
+  <Id>k__BackingField: f7ede9a0e38f4605
+  Name: Eggs
   Description: 
-  Icon: {fileID: 0}
+  Icon: {fileID: -648203500, guid: c1ff6d3f8b92faf418e84ffdc552f2de, type: 3}
