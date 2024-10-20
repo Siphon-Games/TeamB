@@ -31,10 +31,10 @@ public interface IInteractor
     public LayerMask InteractableLayers { get; set; }
     public bool OverrideRayDirection { get; set; }
 
-    public IInteractable CurrentInteractable { get; set; }  
+    public IInteractable CurrentInteractable { get; set; }
 
-    public void DetectTrigger(IInteractable interactable);
-    public void DetectRay();
+    public void CheckTrigger(IInteractable interactable);
+    public void CheckRay();
 
     public void FireInteraction();
 }

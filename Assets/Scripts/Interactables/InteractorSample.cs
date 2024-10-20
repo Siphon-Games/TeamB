@@ -25,12 +25,12 @@ public class InteractorSample : MonoBehaviour, IInteractor
         TriggerCollider2D = GetComponent<Collider2D>();
     }
 
-    public void DetectTrigger(IInteractable interactable)
+    public void CheckTrigger(IInteractable interactable)
     {
         CurrentInteractable = interactable;
     }
 
-    public void DetectRay()
+    public void CheckRay()
     {
         RaycastHit hit;
 
@@ -64,7 +64,7 @@ public class InteractorSample : MonoBehaviour, IInteractor
     // Update is called once per frame
     void Update()
     {
-        if (InteractionMethod == InteractionMethods.RAYCASTING) DetectRay();
+        if (InteractionMethod == InteractionMethods.RAYCASTING) CheckRay();
 
         if (Input.GetKeyDown(KeyCode.E))
         {
@@ -78,7 +78,7 @@ public class InteractorSample : MonoBehaviour, IInteractor
         {
             if (other.TryGetComponent(out IInteractable interactable) && ValidateLayer(other.gameObject.layer))
             {
-                DetectTrigger(interactable);
+                CheckTrigger(interactable);
             }
         }
     }
@@ -100,7 +100,7 @@ public class InteractorSample : MonoBehaviour, IInteractor
         {
             if (collision.TryGetComponent(out IInteractable interactable) && ValidateLayer(collision.gameObject.layer))
             {
-                DetectTrigger(interactable);
+                CheckTrigger(interactable);
             }
         }
     }
