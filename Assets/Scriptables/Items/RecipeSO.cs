@@ -5,8 +5,8 @@ using UnityEngine;
 [Serializable]
 public class IngredientEntry
 {
-    public ItemSO item;
-    public int quantityNeeded;
+    public ItemSO Item;
+    public int QuantityNeeded;
 }
 
 [CreateAssetMenu(fileName = "RecipeSO", menuName = "Recipe")]

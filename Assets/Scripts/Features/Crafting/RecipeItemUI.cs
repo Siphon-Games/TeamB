@@ -43,8 +43,8 @@ public class RecipeItemUI : MonoBehaviour, IPointerClickHandler
 
         foreach (var ingredient in recipe.Ingredients)
         {
-            ingredientsInfo.AppendLine(ingredient.item.Name);
-            quantityNeededInfo.AppendLine($"/{ingredient.quantityNeeded}");
+            ingredientsInfo.AppendLine(ingredient.Item.Name);
+            quantityNeededInfo.AppendLine($"/{ingredient.QuantityNeeded}");
         }
 
         ingredientNameText.text = ingredientsInfo.ToString().TrimEnd('\n');
@@ -57,9 +57,7 @@ public class RecipeItemUI : MonoBehaviour, IPointerClickHandler
 
         foreach (var ingredient in recipe.Ingredients)
         {
-            var inventoryItem = inventory.items.FirstOrDefault(item =>
-                item.Item == ingredient.item
-            );
+            var inventoryItem = GetInventoryItem(ingredient.Item);
 
             quantityOwnedInfo.AppendLine(
                 inventoryItem != null ? inventoryItem.Quantity.ToString() : "0"
@@ -73,11 +71,9 @@ public class RecipeItemUI : MonoBehaviour, IPointerClickHandler
     {
         foreach (var ingredient in recipe.Ingredients)
         {
-            var inventoryItem = inventory.items.FirstOrDefault(item =>
-                item.Item == ingredient.item
-            );
+            var inventoryItem = GetInventoryItem(ingredient.Item);
 
-            if (inventoryItem == null || inventoryItem.Quantity < ingredient.quantityNeeded)
+            if (inventoryItem == null || inventoryItem.Quantity < ingredient.QuantityNeeded)
             {
                 return false;
             }
@@ -86,12 +82,43 @@ public class RecipeItemUI : MonoBehaviour, IPointerClickHandler
         return true;
     }
 
+    private InventoryItem GetInventoryItem(ItemSO item)
+    {
+        return inventory.items.FirstOrDefault(i => i.Item == item);
+    }
+
+    private void CraftRecipe(RecipeSO recipe)
+    {
+        // Reference inventory to add new dish
+        InventoryItem newDish = new InventoryItem(recipe.ResultingDish, 1);
+        inventory.AddNewItem(newDish, 1);
+    }
+
+    private void ConsumeIngredients(RecipeSO recipe)
+    {
+        List<IngredientEntry> ingredientsUsed = recipe.Ingredients;
+
+        // Update quantity of ingredients in the inventory
+        foreach (var ingredient in ingredientsUsed)
+        {
+            string ingredientName = ingredient.Item.Name;
+            int quantityNeeded = ingredient.QuantityNeeded;
+
+            InventorySlot slot = inventory.Slots.Find(slot => slot.Item?.Id == ingredient.Item.Id);
+
+            slot.UpdateQuantity(-quantityNeeded);
+            inventory.UpdateItemsList(ingredient.Item, -quantityNeeded);
+        }
+
+        UpdateQuantityOwnedText();
+    }
+
     public void OnPointerClick(PointerEventData eventData)
     {
         if (HasEnoughIngredients())
         {
-            InventoryItem newDish = new InventoryItem(recipe.ResultingDish, 1);
-            inventory.AddNewItem(newDish, 1);
+            CraftRecipe(recipe);
+            ConsumeIngredients(recipe);
         }
         else
         {

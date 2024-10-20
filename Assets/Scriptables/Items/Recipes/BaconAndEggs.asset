@@ -16,8 +16,8 @@ MonoBehaviour:
   Name: BaconAndEggsRecipe
   Description: 
   Ingredients:
-  - item: {fileID: 11400000, guid: 8fcc2fe727be4aa4bae77c58df0b86c2, type: 2}
-    quantityNeeded: 2
-  - item: {fileID: 11400000, guid: e4e6774108c19fd4cb9623ffca4aa466, type: 2}
-    quantityNeeded: 1
+  - Item: {fileID: 11400000, guid: 8fcc2fe727be4aa4bae77c58df0b86c2, type: 2}
+    QuantityNeeded: 2
+  - Item: {fileID: 11400000, guid: e4e6774108c19fd4cb9623ffca4aa466, type: 2}
+    QuantityNeeded: 1
   ResultingDish: {fileID: 11400000, guid: bd5ef932fe6e76c43a34b035c30899a1, type: 2}

@@ -104,10 +104,10 @@ public class InventoryUI
         };
 
         AddItems(newDishList);
-        UpdateItemsList(item, quantity);
+        UpdateItemsList(item.Item, quantity);
     }
 
-    private void UpdateItemsList(InventoryItem item, int quantity)
+    public void UpdateItemsList(ItemSO item, int quantity)
     {
         var existingItem = items.FirstOrDefault(i => i.Item.Id == item.Id);
         if (existingItem != null)
@@ -116,7 +116,7 @@ public class InventoryUI
         }
         else
         {
-            items.Add(new InventoryItem(item.Item, quantity));
+            items.Add(new InventoryItem(item, quantity));
         }
     }
 

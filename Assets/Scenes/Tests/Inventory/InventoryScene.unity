@@ -828,7 +828,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: e4e6774108c19fd4cb9623ffca4aa466, type: 2}
     - target: {fileID: 3352268800508534652, guid: 1c9ed3625b125d54d94dbf998e0c224c, type: 3}
       propertyPath: <items>k__BackingField.Array.data[0].Quantity
-      value: 1
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3352268800508534652, guid: 1c9ed3625b125d54d94dbf998e0c224c, type: 3}
       propertyPath: <items>k__BackingField.Array.data[1].Quantity
@@ -836,7 +836,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3352268800508534652, guid: 1c9ed3625b125d54d94dbf998e0c224c, type: 3}
       propertyPath: <items>k__BackingField.Array.data[2].Quantity
-      value: 2
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 3352268800508534652, guid: 1c9ed3625b125d54d94dbf998e0c224c, type: 3}
       propertyPath: <items>k__BackingField.Array.data[3].Quantity
