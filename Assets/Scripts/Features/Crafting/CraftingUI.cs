@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class CraftingUI : MonoBehaviour
 {
     [SerializeField]
-    private RecipeItem recipeItemPrefab;
+    private RecipeItemUI recipeItemPrefab;
 
     [SerializeField]
     private Transform recipeItemParent;
@@ -29,14 +29,13 @@ public class CraftingUI : MonoBehaviour
 
         foreach (var recipe in recipes)
         {
-            RecipeItem recipeItem = Instantiate(recipeItemPrefab, recipeItemParent);
+            RecipeItemUI recipeItem = Instantiate(recipeItemPrefab, recipeItemParent);
 
             RectTransform rectTransform = recipeItem.GetComponent<RectTransform>();
             rectTransform.anchoredPosition = position;
             position.y -= rectTransform.rect.height + 10f;
 
-            recipeItem.Initialize(recipe);
-            recipeItem.UpdateQuantityOwnedText(inventoryPrefab);
+            recipeItem.Initialize(recipe, inventoryPrefab);
         }
     }
 }

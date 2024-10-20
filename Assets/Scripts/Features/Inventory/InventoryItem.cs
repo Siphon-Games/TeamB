@@ -4,9 +4,15 @@ using UnityEngine;
 [Serializable]
 public class InventoryItem
 {
-    public ItemSO item;
+    public ItemSO Item;
     public int Quantity;
 
-    public string Id => item.Id;
-    public Sprite Icon => item.Icon;
+    public string Id => Item.Id;
+    public Sprite Icon => Item.Icon;
+
+    public InventoryItem(ItemSO item, int quantity)
+    {
+        Item = item;
+        Quantity = quantity;
+    }
 }

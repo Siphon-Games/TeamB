@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -93,6 +94,30 @@ public class InventoryUI
         });
 
         AddItems(itemsWithQuantities);
+    }
+
+    public void AddNewItem(InventoryItem item, int quantity)
+    {
+        List<(InventoryItem, int)> newDishList = new List<(InventoryItem, int)>
+        {
+            (item, quantity),
+        };
+
+        AddItems(newDishList);
+        UpdateItemsList(item, quantity);
+    }
+
+    private void UpdateItemsList(InventoryItem item, int quantity)
+    {
+        var existingItem = items.FirstOrDefault(i => i.Item.Id == item.Id);
+        if (existingItem != null)
+        {
+            existingItem.Quantity += quantity;
+        }
+        else
+        {
+            items.Add(new InventoryItem(item.Item, quantity));
+        }
     }
 
     public void LoadInventory()
