@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,7 +13,13 @@ public class RecipeItem : MonoBehaviour, IPointerClickHandler
     private Image recipeImage;
 
     [SerializeField]
-    private TextMeshProUGUI recipeGuideText;
+    private TextMeshProUGUI ingredientNameText;
+
+    [SerializeField]
+    private TextMeshProUGUI quantityOwnedText;
+
+    [SerializeField]
+    private TextMeshProUGUI quantityNeededText;
 
     private RecipeSO recipe;
 
@@ -19,13 +29,38 @@ public class RecipeItem : MonoBehaviour, IPointerClickHandler
         recipeImage.sprite = recipe.ResultingDish.Icon;
         recipeImage.enabled = true;
 
-        var ingredientsText = "";
+        UpdateIngredientUI();
+    }
+
+    private void UpdateIngredientUI()
+    {
+        StringBuilder ingredientsInfo = new StringBuilder();
+        StringBuilder quantityNeededInfo = new StringBuilder();
+
         foreach (var ingredient in recipe.Ingredients)
         {
-            ingredientsText += $"{ingredient.item.Name} 0/{ingredient.quantity}\n";
+            ingredientsInfo.AppendLine(ingredient.item.Name);
+            quantityNeededInfo.AppendLine($"/{ingredient.quantityNeeded}");
         }
 
-        recipeGuideText.text = ingredientsText;
+        ingredientNameText.text = ingredientsInfo.ToString().TrimEnd('\n');
+        quantityNeededText.text = quantityNeededInfo.ToString().TrimEnd('\n');
+    }
+
+    public void UpdateQuantityOwnedText(InventoryUI inventory)
+    {
+        StringBuilder quantityOwnedInfo = new StringBuilder();
+
+        List<InventoryItem> matchingItems = inventory.items.FindAll(item =>
+            recipe.Ingredients.Any(ingredient => ingredient.item == item.item)
+        );
+
+        foreach (var item in matchingItems)
+        {
+            quantityOwnedInfo.AppendLine(item.Quantity.ToString());
+        }
+
+        quantityOwnedText.text = quantityOwnedInfo.ToString().TrimEnd('\n');
     }
 
     public void OnPointerClick(PointerEventData eventData)

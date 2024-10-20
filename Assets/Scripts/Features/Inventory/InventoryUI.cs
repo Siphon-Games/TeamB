@@ -21,8 +21,8 @@ public class InventoryUI
 
     Image draggingItem;
 
-    [SerializeField]
-    List<InventoryItem> items;
+    [field: SerializeField]
+    public List<InventoryItem> items { get; private set; }
 
     [SerializeField]
     Button SaveButton,

@@ -14,6 +14,9 @@ public class CraftingUI : MonoBehaviour
     [SerializeField]
     private List<RecipeSO> recipes;
 
+    [SerializeField]
+    private InventoryUI inventoryPrefab;
+
     private void Start()
     {
         LoadRecipes();
@@ -33,6 +36,7 @@ public class CraftingUI : MonoBehaviour
             position.y -= rectTransform.rect.height + 10f;
 
             recipeItem.Initialize(recipe);
+            recipeItem.UpdateQuantityOwnedText(inventoryPrefab);
         }
     }
 }

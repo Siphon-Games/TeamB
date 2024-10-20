@@ -17,9 +17,9 @@ MonoBehaviour:
   Description: 
   Ingredients:
   - item: {fileID: 11400000, guid: d8c8c7e47e3cb63449b7add538eb9bd8, type: 2}
-    quantity: 2
+    quantityNeeded: 2
   - item: {fileID: 11400000, guid: b33aaaa23672f3546b282d4fe4989d8c, type: 2}
-    quantity: 1
+    quantityNeeded: 1
   - item: {fileID: 11400000, guid: 8fcc2fe727be4aa4bae77c58df0b86c2, type: 2}
-    quantity: 2
+    quantityNeeded: 2
   ResultingDish: {fileID: 11400000, guid: 5e28dc64f71f2414fbe7fbd122b5ee9d, type: 2}
