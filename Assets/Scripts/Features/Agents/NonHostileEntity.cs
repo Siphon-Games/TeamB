@@ -4,7 +4,7 @@ public class NonHostileEntity : Agent<EntityState, NonHostileEntityState>
 
     protected override void InitStateMachine()
     {
-        StateMachine = gameObject.AddComponent<StateMachine<EntityState, NonHostileEntityState>>();
+        StateMachine = gameObject.AddComponent<NonHostileEntityStateMachine>();
         StateMachine.Create(this);
     }
 }

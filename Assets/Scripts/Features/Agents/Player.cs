@@ -4,7 +4,7 @@ public class Player : Agent<PlayerStateEnum, PlayerState>, IControllerData<Playe
 {
     public override StateMachine<PlayerStateEnum, PlayerState> StateMachine { get; set; }
 
-    [field: SerializeField] public PlayerControllerData Data {  get; set; }
+    [field: SerializeField] public PlayerControllerData Data { get; set; }
 
     public Animator Animator;
     public Rigidbody Rigidbody;

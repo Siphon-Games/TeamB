@@ -217,8 +217,8 @@ GameObject:
   - component: {fileID: 973699117}
   - component: {fileID: 973699119}
   - component: {fileID: 973699121}
-  - component: {fileID: 973699116}
   - component: {fileID: 973699120}
+  - component: {fileID: 973699116}
   m_Layer: 0
   m_Name: Player Sample
   m_TagString: Untagged
@@ -241,8 +241,8 @@ MonoBehaviour:
   EntityName: Guy
   <Data>k__BackingField: {fileID: 11400000, guid: 0a60757fd02d54a46ac63b38f5891e26, type: 2}
   Animator: {fileID: 973699119}
-  Rigidbody: {fileID: 0}
-  SpriteRenderer: {fileID: 0}
+  Rigidbody: {fileID: 973699121}
+  SpriteRenderer: {fileID: 973699117}
 --- !u!212 &973699117
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -393,6 +393,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1383102905}
   - component: {fileID: 1383102904}
+  - component: {fileID: 1383102906}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
@@ -470,6 +471,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!65 &1383102906
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1383102903}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 10, y: 10.000002, z: 0.2}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1410502836
 GameObject:
   m_ObjectHideFlags: 0

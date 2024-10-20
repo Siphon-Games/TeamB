@@ -18,3 +18,21 @@ public class PlayerStateMachine : StateMachine<PlayerStateEnum, PlayerState>
         return this;
     }
 }
+
+public class NonHostileEntityStateMachine : StateMachine<EntityState, NonHostileEntityState>
+{
+    protected override Dictionary<EntityState, NonHostileEntityState> states { get; set; }
+
+    public override EntityState CurrentState { get; protected set; }
+
+    public override StateMachine<EntityState, NonHostileEntityState> Create(Agent<EntityState, NonHostileEntityState> agent)
+    {
+        states = new();
+
+        // Add states here 
+
+        // Change to default state
+
+        return this;
+    }
+}
