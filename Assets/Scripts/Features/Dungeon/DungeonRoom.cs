@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class DungeonRoom : MonoBehaviour
@@ -14,12 +15,17 @@ public class DungeonRoom : MonoBehaviour
     RoomTypes type;
     public RoomTypes Type => type;
 
+    [SerializeField]
+    TextMeshProUGUI roomTitle;
+
     public void InitializeDoorTriggers(
         Action<Collider, DoorLocation, DungeonRoom> _onEnterDoor,
         DoorLocation lastEnteredDoor,
         List<DungeonRoom> roomsToSpawn
     )
     {
+        roomTitle.text = type.ToString();
+
         var activeDoors = DisableDoor(
             lastEnteredDoor,
             new() { leftDoor, rightDoor, topDoor, bottomDoor }
