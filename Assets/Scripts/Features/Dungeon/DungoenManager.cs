@@ -20,29 +20,35 @@ public class DungoenManager : MonoBehaviour
         GenerateRoom(DoorLocation.Right);
     }
 
-    void GenerateRoom(DoorLocation enteredDoor)
+    void GenerateRoom(DoorLocation enteredDoor, DungeonRoom roomToSpawn = null)
     {
-        var room = GetRoomToSpawn();
+        var room = roomToSpawn == null ? GetRoomToSpawn() : roomToSpawn;
         var spawnedRoom = Instantiate(room);
         var lastRoom = GetLastSpawnedRoom();
 
         if (lastRoom != null)
         {
             PositionRoom(spawnedRoom, lastRoom.transform, enteredDoor);
+            lastRoom.gameObject.SetActive(false);
         }
 
         spawnedRooms.Add(spawnedRoom);
-        spawnedRoom.InitializeDoorTriggers(OnEnterDoor, enteredDoor);
+        List<DungeonRoom> roomsToSpawn =
+            new() { GetRoomToSpawn(), GetRoomToSpawn(), GetRoomToSpawn() };
+
+        spawnedRoom.InitializeDoorTriggers(OnEnterDoor, enteredDoor, roomsToSpawn);
     }
 
-    void OnEnterDoor(Collider collider, DoorLocation location)
+    void OnEnterDoor(Collider collider, DoorLocation location, DungeonRoom roomToSpawn)
     {
-        GenerateRoom(location);
+        GenerateRoom(location, roomToSpawn);
     }
 
     DungeonRoom GetRoomToSpawn()
     {
-        return dungeonRooms[0];
+        int randomIndex = UnityEngine.Random.Range(0, dungeonRooms.Count - 1);
+
+        return dungeonRooms[randomIndex];
     }
 
     DungeonRoom GetLastSpawnedRoom()

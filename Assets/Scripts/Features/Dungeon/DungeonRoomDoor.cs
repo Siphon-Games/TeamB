@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 
 public class DungeonRoomDoor : MonoBehaviour
@@ -6,21 +7,30 @@ public class DungeonRoomDoor : MonoBehaviour
     [SerializeField]
     DoorLocation location;
 
-    Action<Collider, DoorLocation> onEnterDoor;
+    DungeonRoom roomToSpawn;
+
+    Action<Collider, DoorLocation, DungeonRoom> onEnterDoor;
 
     bool isDoorEntered = false;
 
-    public void SetOnEnterDoor(Action<Collider, DoorLocation> _onEnterDoor)
+    [SerializeField]
+    TextMeshProUGUI spawnRoomTitle;
+
+    public void SetOnEnterDoor(
+        Action<Collider, DoorLocation, DungeonRoom> _onEnterDoor,
+        DungeonRoom _roomToSpawn
+    )
     {
         onEnterDoor = _onEnterDoor;
+        roomToSpawn = _roomToSpawn;
+        spawnRoomTitle.text = roomToSpawn.Type.ToString();
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (!isDoorEntered)
         {
-            onEnterDoor(other, location);
-            Debug.Log($"Woaaahh something entered the {name} !!");
+            onEnterDoor(other, location, roomToSpawn);
             isDoorEntered = true;
         }
     }
